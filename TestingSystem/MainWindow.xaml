@@ -1,0 +1,107 @@
+﻿<Window x:Class="TestingSystem.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TestingSystem"
+        mc:Ignorable="d"
+        Title="Тестирующая система" Height="600" Width="880" MinWidth="800" MinHeight="440">
+    <Grid x:Name="ROOT">
+        <Button x:Name="AddAnswer" Content="Добавить ответы" Margin="155,182,0,0" Click="AddAnswer_Click" Height="28" Width="100" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+        <Button x:Name="Launch" Content="Пуск!" HorizontalAlignment="Left" Margin="37,0,0,25" Width="120.5" Click="Launch_Click" Background="#FFDDDDDD" Height="38" VerticalAlignment="Bottom"/>
+        <ComboBox x:Name="LanguageSelect" HorizontalAlignment="Left" VerticalAlignment="Top" Width="130" Margin="183,32,0,0" Height="30.96" VerticalContentAlignment="Center"/>
+        <TextBlock x:Name="Result" TextWrapping="Wrap" Margin="380,0,30,25" MinWidth="10" MinHeight="10" Height="65" VerticalAlignment="Bottom" Padding="10,8,0,0" Background="#FFDAD3D3" FontFamily="Verdana"/>
+        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Выберите ЯП:" VerticalAlignment="Top" Margin="20,32,0,0" Height="30.96" Width="150.377" FontSize="20"/>
+        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Margin="20,112,0,0" Height="30.96" Width="158" FontSize="20" Text="Программы:"/>
+        <Button x:Name="ProgramSelect" Content="Выбрать" HorizontalAlignment="Left" Height="30.96" Margin="183,112,0,0" VerticalAlignment="Top" Width="130" Click="ProgramSelect_Click"/>
+        <TextBlock x:Name="testCount" TextWrapping="Wrap" Text="0 : 0" Margin="188,150,0,0" FontSize="20" Height="32" VerticalAlignment="Top" HorizontalAlignment="Left" Width="125" Padding="15,0,0,0"/>
+        <TextBlock x:Name="testText" HorizontalAlignment="Left" Height="32" Margin="20,150,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="163" FontSize="20"><Run Text="Тестов в"/><Run Text=" системе: "/></TextBlock>
+        <Button x:Name="AddTest" Content="Добавить тесты" HorizontalAlignment="Left" VerticalAlignment="Top" Width="100" Margin="20,182,0,0" Height="28" Click="AddTest_Click"/>
+        <TextBlock x:Name="CompilerText" HorizontalAlignment="Left" TextWrapping="Wrap" Text="Компилятор:" VerticalAlignment="Top" Margin="20,72,0,0" Height="30.96" Width="150.377" FontSize="20"/>
+        <Button x:Name="CompilerSelect" Content="Выбрать" HorizontalAlignment="Left" Height="30.96" Margin="183,72,0,0" VerticalAlignment="Top" Width="130" Click="CompilerSelect_Click" IsEnabled="False"/>
+        <TabControl x:Name="Information" Margin="380,10,30,103">
+            <TabItem x:Name="LogWindow" Header="Результаты">
+                <Grid x:Name="LogGrid" Background="#FFE5E5E5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition MinWidth="80"/>
+                        <ColumnDefinition MinWidth="80"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="2*" MinHeight="80"/>
+                        <RowDefinition MinHeight="80"/>
+                    </Grid.RowDefinitions>
+                    <ListBox x:Name="Log" Margin="10,10,10,5" SelectionChanged="Log_SelectionChanged" Grid.ColumnSpan="2"/>
+                    <ScrollViewer x:Name="correctLogScroll" Margin="5,25,10,10" Grid.Column="1" Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Background="#FFABADB3">
+                        <TextBlock x:Name="correctAnswerLog" TextWrapping="Wrap" Padding="10" Margin="1" Background="White"/>
+                    </ScrollViewer>
+                    <ScrollViewer x:Name="answerLogScroll" Margin="10,25,5,10" Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Background="#FFABADB3">
+                        <TextBlock x:Name="userAnswerLog" TextWrapping="Wrap" Background="White" Padding="10" Margin="1"/>
+                    </ScrollViewer>
+                    <GridSplitter HorizontalAlignment="Stretch" Height="6" Margin="0,-3,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Grid.Row="1"/>
+                    <TextBlock TextWrapping="Wrap" Text="Ваш ответ" Margin="10,5,5,0" Grid.Row="1" Padding="5,0,0,0" Height="20" VerticalAlignment="Top" Background="#FFDAD3D3" TextAlignment="Center"/>
+                    <GridSplitter HorizontalAlignment="Left" Margin="-3,0,0,0" Grid.Row="1" Width="6" Grid.Column="1"/>
+                    <TextBlock TextWrapping="Wrap" Text="Правильный ответ" Margin="5,5,10,0" Grid.Row="1" Padding="5,0,0,0" Height="20" VerticalAlignment="Top" Grid.Column="1" Background="#FFDAD3D3" TextAlignment="Center"/>
+                </Grid>
+            </TabItem>
+            <TabItem x:Name="TestFiles" Header="Тесты">
+                <Grid Background="#FFE5E5E5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30*" MinHeight="80"/>
+                        <RowDefinition Height="20*" MinHeight="60"/>
+                        <RowDefinition Height="40"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition MinWidth="115"/>
+                        <ColumnDefinition MinWidth="115"/>
+                    </Grid.ColumnDefinitions>
+                    <ListBox x:Name="TestList" Margin="7,25,5,5" SelectionChanged="TestList_SelectionChanged"/>
+                    <ListBox x:Name="AnswerList" Margin="5,25,7,5" Grid.Column="1" SelectionChanged="AnswerList_SelectionChanged"/>
+                    <GridSplitter Margin="-3,25,0,5" Grid.RowSpan="2" HorizontalAlignment="Left" Width="6" Grid.Column="1"/>
+                    <TextBlock x:Name="TestsTitle" Height="25" Margin="7,0.04,5,0" TextWrapping="Wrap" Text="Тесты" VerticalAlignment="Top" TextAlignment="Center" Padding="0,3,0,0"/>
+                    <TextBlock x:Name="AnswersTitle" Grid.Column="1" Margin="5,0.04,7,0" TextWrapping="Wrap" Text="Ответы" VerticalAlignment="Top" Height="25" TextAlignment="Center" Padding="0,3,0,0"/>
+                    <GridSplitter HorizontalAlignment="Stretch" Height="6" VerticalAlignment="Top" ResizeDirection="Rows" Grid.ColumnSpan="2" Margin="7,-3,7,0" Grid.Row="1"/>
+                    <TextBox x:Name="TestsDemo" Background="White" Foreground="Black" Margin="7,5,5,5" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Grid.Row="1" TextChanged="TestsDemo_TextChanged" IsEnabled="False"/>
+                    <TextBox x:Name="AnswersDemo" Background="White" Margin="5,5,7,5" Grid.Column="1" Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" TextChanged="AnswersDemo_TextChanged" IsEnabled="False"/>
+                    <Button x:Name="TestsWindowSave" Content="Сохранить" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="90" Grid.Column="1" Margin="0,0,10,5" Grid.Row="2" Height="30" IsEnabled="False" Click="TestsWindowSave_Click"/>
+                    <Button x:Name="TestsWindowCancel" Content="Отмена" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="90" Margin="10,0,0,5" Grid.Row="2" Height="30" IsEnabled="False" Click="TestsWindowCancel_Click"/>
+                    <Button x:Name="TestsWindowDelete" Content="Удалить" HorizontalAlignment="Left" Width="90" Margin="120,0,0,5" Grid.Row="2" Height="30" VerticalAlignment="Bottom" IsEnabled="False" Click="TestsWindowDelete_Click" Grid.ColumnSpan="2"/>
+                </Grid>
+            </TabItem>
+            <TabItem x:Name="FileNames" Header="Файлы">
+                <Grid Background="#FFE5E5E5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition MinHeight="80"/>
+                        <RowDefinition MinHeight="80"/>
+                        <RowDefinition Height="40"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock TextWrapping="Wrap" Text="Программа:" Margin="10,10,0,0" FontSize="20" Height="30" VerticalAlignment="Top" HorizontalAlignment="Left" Width="120" Grid.Row="1"/>
+                    <TextBlock HorizontalAlignment="Left" Height="30" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" FontSize="20"><Run Text="Компилятор: м"/></TextBlock>
+                    <TextBox x:Name="CompilerFilePath" Margin="135,10,10,4" TextWrapping="Wrap" FontSize="16" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" TextChanged="CompilerFilePath_TextChanged" IsEnabled="False"/>
+                    <TextBox x:Name="ProgramFilePath" TextWrapping="Wrap" Margin="135,4,10,3" FontSize="16" Grid.Row="1" TextChanged="ProgramFilePath_TextChanged" IsEnabled="False"/>
+                    <GridSplitter Height="6" VerticalAlignment="Top" Margin="135,-3,10,0" HorizontalAlignment="Stretch" Grid.Row="1"/>
+                    <Button x:Name="FilesWindowSave" Content="Сохранить" HorizontalAlignment="Right" Margin="0,5,10,0" Grid.Row="2" Width="100" IsEnabled="False" Click="FilesWindowSave_Click" Height="30" VerticalAlignment="Top"/>
+                    <Button x:Name="FilesWindowCancel" Content="Отмена" HorizontalAlignment="Left" Margin="10,5,0,0" Grid.Row="2" Width="100" IsEnabled="False" Click="FilesWindowCancel_Click" Height="30" VerticalAlignment="Top"/>
+                </Grid>
+            </TabItem>
+            <TabItem x:Name="CodeView" Header="Мой код">
+                <Grid Background="#FFE5E5E5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="40"/>
+                    </Grid.RowDefinitions>
+                    <TextBox x:Name="CodeTextView" Margin="5" IsEnabled="False" TextChanged="CodeTextView_TextChanged" Padding="3" AcceptsReturn="True" AcceptsTab="True" HorizontalScrollBarVisibility="Auto"/>
+                    <Button x:Name="CodeViewCancel" Content="Отмена" HorizontalAlignment="Left" Margin="10,5,0,0" Grid.Row="1" Width="100" IsEnabled="False" Height="30" VerticalAlignment="Top" Click="CodeViewCancel_Click"/>
+                    <Button x:Name="CodeViewSave" Content="Сохранить" HorizontalAlignment="Right" Margin="0,5,10,0" Grid.Row="1" Width="100" IsEnabled="False" Height="30" VerticalAlignment="Top" Click="CodeViewSave_Click"/>
+                </Grid>
+            </TabItem>
+        </TabControl>
+        <ProgressBar x:Name="TestingProgress" Margin="380,0,30,90" Height="13" VerticalAlignment="Bottom"/>
+        <Button x:Name="Cancel" Content="Отмена" HorizontalAlignment="Left" Margin="204.5,0,0,25" Width="120.5" Click="Cancel_Click" Background="#FFDDDDDD" Height="38" VerticalAlignment="Bottom" IsEnabled="False" RenderTransformOrigin="0.365,0.526"/>
+        <ListBox x:Name="ProgrammerSelect" HorizontalAlignment="Left" Margin="20,270,0,90" Width="324" HorizontalContentAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Visible" SelectionChanged="ProgrammerSelect_SelectionChanged"/>
+        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Margin="20,215,0,0" Height="30.96" Width="137.5" FontSize="20" Text="Ограничение:"/>
+        <Slider x:Name="TimeLimitSlider" HorizontalAlignment="Left" Margin="59,245.96,0,0" VerticalAlignment="Top" Width="215" Value="50" Maximum="250" Minimum="1"/>
+        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Margin="280,215,0,0" Height="30.96" Width="54.5" FontSize="20" Text="ms"/>
+        <TextBox x:Name="TimeLimitDisplay" HorizontalAlignment="Left" Height="30.96" Margin="158,215,0,0" TextWrapping="Wrap" Text="1000" VerticalAlignment="Top" Width="117" Background="#FFB6BBCF" TextAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="20" FontWeight="Medium" BorderThickness="1" AutoWordSelection="True" AcceptsReturn="True"/>
+
+    </Grid>
+</Window>

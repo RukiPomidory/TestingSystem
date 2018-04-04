@@ -15,6 +15,12 @@ namespace TestingSystem
         public string SecondGroup { get; set; }
         public string ThirdGroup { get; set; }
 
+        /// <summary>
+        /// Создает экземпляр Comment
+        /// </summary>
+        /// <param name="first">Именительный падеж</param>
+        /// <param name="second">Родительный падеж, единственное число</param>
+        /// <param name="third">Родительный падеж, множественное число</param>
         public Comment(string first, string second, string third)
         {
             FirstGroup = first;
@@ -22,6 +28,11 @@ namespace TestingSystem
             ThirdGroup = third;
         }
 
+        /// <summary>
+        /// Возвращает комментарий в зависимости от переданного числа по правилам русского языка
+        /// </summary>
+        /// <param name="rating">Количество, от которого зависит комментарий</param>
+        /// <returns>Комментарий</returns>
         public string GetAComment(int rating)
         {
             int rem = rating % 10;

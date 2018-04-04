@@ -201,6 +201,14 @@ namespace TestingSystem
             }
         }
 
+        /// <summary>
+        /// Проверяет совпадение вывода программы с правильным ответом
+        /// </summary>
+        /// <param name="stream">Поток, используемый для чтения данных программы</param>
+        /// <param name="answerPath">Путь к файлу с правильным ответом</param>
+        /// <param name="index">Текущий индекс</param>
+        /// <param name="coder">Текущий программист</param>
+        /// <returns>true - если ответ верный, иначе - false</returns>
         bool IsPassed(StreamReader stream, string answerPath, int index, Programmer coder)
         {
             bool result = true;
@@ -217,6 +225,15 @@ namespace TestingSystem
             return result;
         }
 
+        /// <summary>
+        /// Асинхронно проверяет совпадение вывода программы с правильным ответом
+        /// </summary>
+        /// <param name="stream">Поток, используемый для чтения данных программы</param>
+        /// <param name="answerPath">Путь к файлу с правильным ответом</param>
+        /// <param name="index">Текущий индекс</param>
+        /// <param name="coder">Текущий программист</param>
+        /// <param name="cancel">Токен отмены</param>
+        /// <returns>Асинхронная операция, возвращающая результат проверки</returns>
         Task<bool> IsPassedAsync(StreamReader stream, string answerPath, int index, Programmer coder,
             CancellationToken cancel)
         {
@@ -242,6 +259,11 @@ namespace TestingSystem
             return task;
         }
 
+        /// <summary>
+        /// Добавляет элементы в лог 
+        /// </summary>
+        /// <param name="index">Текущий индекс</param>
+        /// <param name="content">Контент элемента</param>
         void AddLogItem(int index, string content)
         {
             var item = new ListBoxItem
@@ -254,6 +276,11 @@ namespace TestingSystem
             Log.Items.Add(item);
         }
 
+        /// <summary>
+        /// Запуск программы вхолостую. Рекомендуется выполнить перед тестированием
+        /// </summary>
+        /// <param name="programmer">Текущий программист</param>
+        /// <param name="program">Готовый к запуску процесс программы</param>
         void Idle(Programmer programmer, Process program)
         {
             program.Start();
@@ -269,6 +296,11 @@ namespace TestingSystem
             program.Close();
         }
 
+        /// <summary>
+        /// Проводит тестирование выбранного программиста на имеющихся в системе тестах
+        /// </summary>
+        /// <param name="programmer">Текущий программист</param>
+        /// <param name="token">Токен отмены операции</param>
         async private void Run(Programmer programmer, CancellationToken token)
         {
             token.ThrowIfCancellationRequested();
@@ -376,6 +408,9 @@ namespace TestingSystem
             ProgrammerSelect_SelectionChanged(null, null);
         }
 
+        /// <summary>
+        /// Запускает тестирование для каждого занесенного в систему программиста
+        /// </summary>
         private void Launch_Click(object sender, RoutedEventArgs e)
         {
             if (Programmers.Count == 0)
@@ -431,12 +466,20 @@ namespace TestingSystem
             }
         }
 
+        /// <summary>
+        /// Вызывает остановку тестирования
+        /// </summary>
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
             cancellation.Cancel();
             TestingProgress_ValueChanged(null, null);
         }
 
+        /// <summary>
+        /// Создает программу на основе данных, полученных из экземпляра Programmer
+        /// </summary>
+        /// <param name="programmer">Программист, чью программу необходимо получить</param>
+        /// <returns>Возвращает готовый к запуску процесс программы</returns>
         Process CreateProgram(Programmer programmer)
         {
             if (programmer.programPath == null)
@@ -444,6 +487,11 @@ namespace TestingSystem
             return programmer.language.CreatingMethod(programmer);
         }
 
+        /// <summary>
+        /// Асинхронно создает программу на основе данных, полученных из экземпляра Programmer
+        /// </summary>
+        /// <param name="programmer">Программист, чью программу необходимо получить</param>
+        /// <returns>Асинхронная операция, возвращающая готовый к запуску процесс программы по окончании компиляции</returns>
         Task<Process> CreateProgramAsync(Programmer programmer)
         {
             var task = new Task<Process>(() => CreateProgram(programmer));
@@ -451,11 +499,21 @@ namespace TestingSystem
             return task;
         }
 
+        /// <summary>
+        /// Метод компиляции программы для языков программирования, поддержка которых еще не реализована
+        /// </summary>
+        /// <param name="programmer">Текущий программист</param>
+        /// <returns>Готовый к запуску процесс программы</returns>
         Process NotSupported(Programmer programmer)
         {
             throw new InvalidOperationException(message: "Выбранный язык не поддерживается");
         }
-
+        
+        /// <summary>
+        /// Исполоьзуется для создания процессов программ, написанных на компилируемых языках программирования
+        /// </summary>
+        /// <param name="programmer">Программист, чья программа будет скомпилирована</param>
+        /// <returns>Готовый к запуску процесс скомпилированной программы</returns>
         Process CreateCompilledProgram(Programmer programmer)
         {
             string compiler = File.ReadAllText(programmer.language.ID);
@@ -484,18 +542,32 @@ namespace TestingSystem
             
             return CreateProcess($"{direct}\\{file}.exe");
         }
-
+        
+        /// <summary>
+        /// Используется для создания процессов программ, написанных на интерпретируемых языках программирования
+        /// </summary>
+        /// <param name="programmer">Программист, чья программа будет скомпилирована</param>
+        /// <returns>Готовый к запуску процесс программы</returns>
         Process CreateInterpretedProgram(Programmer programmer)
         {
             return CreateProcess("C:\\Windows\\System32\\cmd.exe");
         }
 
+        /// <summary>
+        /// Используется для создания процессов программ, написанных на C++
+        /// </summary>
+        /// <param name="programmer">Программист, чья программа будет скомпилирована</param>
+        /// <returns>Готовый к запуску процесс программы</returns>
         Process CreateCppProgram(Programmer programmer)
         {
-            //"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Visual Studio 2017\Visual Studio Tools\Developer Command Prompt for VS 2017 (2)"
             throw new NotImplementedException();
         } 
-
+        
+        /// <summary>
+        /// Метод создания процесса программы
+        /// </summary>
+        /// <param name="path">Путь к файлу с текстом программы</param>
+        /// <returns>Готовый к запуску процесс программы, если компиляция провалилась - null</returns>
         Process CreateProcess(string path)
         {
             try
@@ -520,6 +592,11 @@ namespace TestingSystem
             }
         }
         
+        /// <summary>
+        /// Открывает диалог выбора файлов и запускает для каждого метод обработки
+        /// </summary>
+        /// <param name="filter">Фильтры расширений файлов</param>
+        /// <param name="act">Метод, обрабатывающий каждый из выбранных файлов. В качестве параметра принимает имя файла</param>
         void OpenFile(string filter, Action<string> act)
         {
             OpenFileDialog dialog = new OpenFileDialog
@@ -535,12 +612,19 @@ namespace TestingSystem
             }
         }
 
+        /// <summary>
+        /// Создает файл с именем выбранного языка программирования, содержащий путь к компилятору
+        /// </summary>
+        /// <param name="path">Путь к компилятору выбранного языка программирования</param>
         void CreateCompilerFile(string path)
         {
             string lang = SelectedLanguage;
             File.WriteAllText(lang, path);
         }
-
+        
+        /// <summary>
+        /// Открывает диалог выбора файлов программ
+        /// </summary>
         private void ProgramSelect_Click(object sender, RoutedEventArgs e)
         {
             OpenFile("All files (*.*)|*.*|Text documents (.txt)|*.txt", (name) =>
@@ -577,6 +661,9 @@ namespace TestingSystem
             });
         }
 
+        /// <summary>
+        /// Открывает диалог выбора файлов с тестами
+        /// </summary>
         private void AddTest_Click(object sender, RoutedEventArgs e)
         {
             OpenFile("Text documents (.txt)|*.txt", (name) =>
@@ -592,6 +679,9 @@ namespace TestingSystem
             });
         }
 
+        /// <summary>
+        /// Открывает диалог выбора файлов с ответами к тестам
+        /// </summary>
         private void AddAnswer_Click(object sender, RoutedEventArgs e)
         {
             OpenFile("Text documents (.txt)|*.txt", (name) =>
@@ -607,6 +697,9 @@ namespace TestingSystem
             });
         }
 
+        /// <summary>
+        /// Открывает диалог выбора файла компилятора
+        /// </summary>
         private void CompilerSelect_Click(object sender, RoutedEventArgs e)
         {
             OpenFile("All files (*.*)|*.*", (name) =>
@@ -752,6 +845,10 @@ namespace TestingSystem
             testCount.Text = $"{Tests.Count} : {Answers.Count}";
         }
 
+        /// <summary>
+        /// Удаляет элемент списка тестов на указанном индексе
+        /// </summary>
+        /// <param name="index">Индекс элемента, который должен быть удален</param>
         void TestListRemove(int index)
         {
             if (index >= Tests.Count || index < 0) return;
@@ -769,6 +866,10 @@ namespace TestingSystem
             TestList.SelectedIndex = index;
         }
 
+        /// <summary>
+        /// Удаляет элемент списка ответов на указанном индексе
+        /// </summary>
+        /// <param name="index">Индекс элемента, который должен быть удален</param>
         void AnswerListRemove(int index)
         {
             if (index >= Answers.Count || index < 0) return;
@@ -863,6 +964,10 @@ namespace TestingSystem
             }
         }
 
+        /// <summary>
+        /// Создает элемент списка программистов
+        /// </summary>
+        /// <param name="programmer">Программист, которому будет принадлежать созданный элемент</param>
         void ProgrammerSelectAdd(Programmer programmer)
         {
             var grid = new Grid() as IAddChild;

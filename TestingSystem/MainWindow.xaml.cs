@@ -40,6 +40,7 @@ namespace TestingSystem
         List<Programmer> Programmers { get; set; }
         CancellationTokenSource cancellation;
         int timeLimit = 1000;
+        int maxTimeLimit = 600000;
         int TimeLimit
         {
             get
@@ -48,7 +49,7 @@ namespace TestingSystem
             }
             set
             {
-                timeLimit = value > 600000 || value <= 0  ? -1 : value ;
+                timeLimit = value > maxTimeLimit || value <= 0  ? -1 : value ;
             }
         }
         string SelectedLanguage
@@ -199,6 +200,7 @@ namespace TestingSystem
                 Launch.IsEnabled = true;
                 cancellation.Dispose();
             }
+            UpdateLayout();
         }
 
         /// <summary>
@@ -322,7 +324,7 @@ namespace TestingSystem
                 programmer.time = 0;
 
                 TestingProgress.Value += 3;
-                Idle(programmer, program);
+               // Idle(programmer, program);
                 TestingProgress.Value += 2;
                 for (int i = 0; i < Tests.Count; i++)
                 {
@@ -342,12 +344,14 @@ namespace TestingSystem
                         sWatch.Start();
                         var isPassedTask = IsPassedAsync(output, Answers[i], i, programmer, cancel.Token);
                         int completedId = TimeLimit > 0 ?
-                            Task.WaitAny(Task.Delay(TimeLimit, new CancellationToken()), 
+                            Task.WaitAny(Task.Delay(TimeLimit, cancellation.Token),
                             isPassedTask) : 1;
+                        //var completedId = 1;
                         if (completedId == 1)
                         {
                             bool isPassed = await isPassedTask;
                             sWatch.Stop();
+
                             long time = sWatch.ElapsedMilliseconds;
                             if (isPassed)
                             {
@@ -365,7 +369,8 @@ namespace TestingSystem
                         else
                         {
                             cancel.Cancel();
-                            isPassedTask.Dispose();
+                            Thread.Sleep(5);
+                            //isPassedTask.Dispose();
                             if (programmer.firstFail == -1)
                                 programmer.firstFail = i;
                             testResult = $"FAILED \ttime limit exceeded";
@@ -472,6 +477,7 @@ namespace TestingSystem
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
             cancellation.Cancel();
+            TestingProgress.Value = 0;
             TestingProgress_ValueChanged(null, null);
         }
 
